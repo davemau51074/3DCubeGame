@@ -38,6 +38,7 @@ private:
 	void unload();
 	String readMethod();
 	String fragmentRead();
+
 };
 
 #endif

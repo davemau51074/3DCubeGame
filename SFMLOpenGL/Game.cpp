@@ -16,13 +16,23 @@ GLuint	vsid,		// Vertex Shader ID
 
 //const string filename = "coordinates.tga";
 //const string filename = "cube.tga";
-//const string filename = "grid.tga";
-const string filename = "grid_wip.tga";
+const string filename = "grid.tga";
+//const string filename = "grid_wip.tga";
 //const string filename = "minecraft.tga";
 //const string filename = "texture.tga";
 //const string filename = "texture_2.tga";
 //const string filename = "uvtemplate.tga";
+Vector2f velocity(0.0f, 1.0f);
+Vector2f position(400, 399);
+Vector2f impulse(20.7f, 20.7f);
+Vector2f gravity(0.0f, 9.8f);
+const float acceleration = 0.25;
+float const pixelsTometres = 20;
 
+
+
+const sf::Time timePerFrame = sf::seconds(1.0f / 60.0f);
+sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
 int width;			// Width of texture
 int height;			// Height of texture
@@ -61,7 +71,7 @@ void Game::run()
 #if (DEBUG >= 2)
 		DEBUG_MSG("Game running...");
 #endif
-
+		bool move = false;
 		while (window.pollEvent(event))
 		{
 			if (event.type == Event::Closed)
@@ -72,25 +82,25 @@ void Game::run()
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 			{
 				// Set Model Rotation
-				model = rotate(model, 0.01f, glm::vec3(0, 1, 0)); // Rotate
+				model = rotate(model, 0.20f, glm::vec3(0, 1, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 			{
 				// Set Model Rotation
-				model = rotate(model, -0.01f, glm::vec3(0, 1, 0)); // Rotate
+				model = rotate(model, -0.20f, glm::vec3(0, 1, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
 				// Set Model Rotation
-				model = rotate(model, -0.01f, glm::vec3(1, 0, 0)); // Rotate
+				model = rotate(model, -0.20f, glm::vec3(1, 0, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			{
 				// Set Model Rotation
-				model = rotate(model, 0.01f, glm::vec3(1, 0, 0)); // Rotate
+				model = rotate(model, 0.20f, glm::vec3(1, 0, 0)); // Rotate
 			//	model = translate(model,  glm::vec3(1, 0, 0)); // Rotate
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
@@ -130,6 +140,36 @@ void Game::run()
 
 
 			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+			{
+				move = true;
+				velocity.y = impulse.y*pixelsTometres;
+			
+			}
+
+
+
+			if (move == false)
+			{
+
+				velocity.y = 0;
+				position.y = 400;
+			//	model.setPosition(position);
+			}
+			else
+			{
+				position.y = 400;
+				//model.setPosition(position);
+				float temp = (velocity.y / 2.0f);
+				velocity.y = -(velocity.y);
+				velocity.y += temp;
+
+			}
+
+
+
+
+
 
 		}
 		update();
@@ -173,29 +213,29 @@ void Game::initialize()
 
 	//Indices to be drawn
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * INDICES * sizeof(GLuint), indices, GL_STATIC_DRAW);
-
-	const char* vs_src = 
-		"#version 400\n\r"
-		""
-		//"layout(location = 0) in vec3 sv_position; //Use for individual Buffers"
-		//"layout(location = 1) in vec4 sv_color; //Use for individual Buffers"
-		//"layout(location = 2) in vec2 sv_texel; //Use for individual Buffers"
-		""
-		"in vec3 sv_position;"
-		"in vec4 sv_color;"
-		"in vec2 sv_uv;"
-		""
-		"out vec4 color;"
-		"out vec2 uv;"
-		""
-		"uniform mat4 sv_mvp;"
-		""
-		"void main() {"
-		"	color = sv_color;"
-		"	uv = sv_uv;"
-		//"	gl_Position = vec4(sv_position, 1);"
-		"	gl_Position = sv_mvp * vec4(sv_position, 1);"
-		"}"; //Vertex Shader Src
+	string shader = readMethod();
+	const char* vs_src = shader.c_str();
+		//"#version 400\n\r"
+		//""
+		/*"layout(location = 0) in vec3 sv_position; //Use for individual Buffers"
+		"layout(location = 1) in vec4 sv_color; //Use for individual Buffers"
+		"layout(location = 2) in vec2 sv_texel; //Use for individual Buffers"*/
+		//""
+		//"in vec3 sv_position;"
+		//"in vec4 sv_color;"
+		//"in vec2 sv_uv;"
+		//""
+		//"out vec4 color;"
+		//"out vec2 uv;"
+		//""
+		//"uniform mat4 sv_mvp;"
+		//""
+		//"void main() {"
+		//"	color = sv_color;"
+		//"	uv = sv_uv;"
+		////"	gl_Position = vec4(sv_position, 1);"
+		//"	gl_Position = sv_mvp * vec4(sv_position, 1);"
+		//"}"; //Vertex Shader Src
 
 	DEBUG_MSG("Setting Up Vertex Shader");
 
@@ -214,27 +254,27 @@ void Game::initialize()
 	{
 		DEBUG_MSG("ERROR: Vertex Shader Compilation Error");
 	}
-
-	const char* fs_src =
-		"#version 400\n\r"
-		""
-		"uniform sampler2D f_texture;"
-		""
-		"in vec4 color;"
-		"in vec2 uv;"
-		""
-		"out vec4 fColor;"
-		""
-		"void main() {"
-		//"	vec4 lightColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); "
-		//"	fColor = vec4(0.50f, 0.50f, 0.50f, 1.0f);"
-		//"	fColor = texture2D(f_texture, uv);"
-		//"	fColor = color * texture2D(f_texture, uv);"
-		//"	fColor = lightColor * texture2D(f_texture, uv);"
-		//"	fColor = color + texture2D(f_texture, uv);"
-		//"	fColor = color - texture2D(f_texture, uv);"
-		"	fColor = color;"
-		"}"; //Fragment Shader Src
+	string frag = fragmentRead();
+	const char* fs_src = frag.c_str();
+		//"#version 400\n\r"
+		//""
+		//"uniform sampler2D f_texture;"
+		//""
+		//"in vec4 color;"
+		//"in vec2 uv;"
+		//""
+		//"out vec4 fColor;"
+		//""
+		//"void main() {"
+		////"	vec4 lightColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); "
+		////"	fColor = vec4(0.50f, 0.50f, 0.50f, 1.0f);"
+		////"	fColor = texture2D(f_texture, uv);"
+		////"	fColor = color * texture2D(f_texture, uv);"
+		////"	fColor = lightColor * texture2D(f_texture, uv);"
+		////"	fColor = color + texture2D(f_texture, uv);"
+		////"	fColor = color - texture2D(f_texture, uv);"
+		//"	fColor = color;"
+		//"}"; //Fragment Shader Src
 
 	DEBUG_MSG("Setting Up Fragment Shader");
 
@@ -410,7 +450,8 @@ String	Game::readMethod()
 {
 	string line;
 	string shader;
-	ifstream myfile("../Shades.txt");
+	ifstream myfile;
+	myfile.open("../Shades.txt");
 	if (myfile.is_open())
 	{
 		while (getline(myfile, line))
@@ -419,8 +460,7 @@ String	Game::readMethod()
 		}
 		myfile.close();
 	}
-
-	else cout << "Unable to open file";
+	else cout << "Unable to open file" <<std::endl;
 
 	return shader;
 
@@ -431,7 +471,8 @@ String Game::fragmentRead()
 {
 	string line;
 	string frag;
-	ifstream myfile("../Fragment.txt");
+	ifstream myfile;
+	myfile.open("../Fragments.txt");
 	if (myfile.is_open())
 	{
 		while (getline(myfile, line))
@@ -440,8 +481,7 @@ String Game::fragmentRead()
 		}
 		myfile.close();
 	}
-
-	else cout << "Unable to open file";
+	else cout << "Unable to open file" << std::endl;
 
 	return frag;
 
