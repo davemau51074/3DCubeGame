@@ -25,6 +25,7 @@ using namespace glm;
 class Game
 {
 public:
+	bool move = false;
 	Game();
 	Game(sf::ContextSettings settings);
 	~Game();
@@ -36,6 +37,7 @@ private:
 	void update();
 	void render();
 	void unload();
+	void cubeRender(mat4 &modelRef);
 	String readMethod();
 	String fragmentRead();
 
