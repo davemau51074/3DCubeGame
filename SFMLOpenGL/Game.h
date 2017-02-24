@@ -5,7 +5,7 @@
 #include <fstream>
 #include <GL/glew.h>
 #include <GL/wglew.h>
-
+#include "Player.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -37,6 +37,7 @@ private:
 	void update();
 	void render();
 	void unload();
+	Player m_player;
 	void cubeRender(mat4 &modelRef);
 	String readMethod();
 	String fragmentRead();

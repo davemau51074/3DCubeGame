@@ -70,8 +70,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);C:\Users\c00202334\Desktop\3DCubeGame-master\3DCubeGame-master\glm;C:\glew-1.13.0\include;$(SFML_SDK)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\glew-1.13.0\lib;C:\Users\c00202334\Desktop\3DCubeGame-master\3DCubeGame-master\glm\lib;$(SFML_SDK)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);C:\Users\c00202334\Desktop\3DCubeGame\glm;C:\glew-1.13.0\include;$(SFML_SDK)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\glew-1.13.0\lib;C:\Users\c00202334\Desktop\3DCubeGame\glm;$(SFML_SDK)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);C:\Users\c00202334\Desktop\3DCubeGame-master\3DCubeGame-master\glm;C:\glew-1.13.0\include;$(SFML_SDK)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\glew-1.13.0\lib;C:\Users\c00202334\Desktop\3DCubeGame-master\3DCubeGame-master\glm\lib;$(SFML_SDK)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);C:\Users\c00202334\Desktop\3DCubeGame\glm;C:\glew-1.13.0\include;$(SFML_SDK)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\glew-1.13.0\lib;C:\Users\c00202334\Desktop\3DCubeGame\glm;$(SFML_SDK)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -158,12 +158,14 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Matrix3.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="stb_image.c" />
   </ItemGroup>
   <ItemGroup>

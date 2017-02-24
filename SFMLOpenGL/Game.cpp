@@ -44,7 +44,9 @@ mat4 mvp, projection, view, model, model2, model3, model4, model5;			// Model Vi
 
 Game::Game() : 
 	window(VideoMode(800, 600), 
-	"Introduction to OpenGL Texturing")
+	"Introduction to OpenGL Texturing"),
+	m_player(glm::vec3(0, 0, 0))
+	
 {
 }
 
@@ -52,7 +54,9 @@ Game::Game(sf::ContextSettings settings) :
 	window(VideoMode(800, 600), 
 	"Introduction to OpenGL Texturing", 
 	sf::Style::Default, 
-	settings)
+	settings),
+	m_player(glm::vec3(0, 0, 0))
+
 {
 }
 
@@ -82,48 +86,68 @@ void Game::run()
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 			{
 				// Set Model Rotation
-				model = rotate(model, 0.20f, glm::vec3(0, 1, 0)); // Rotate
+				float rotation(.05);
+				m_player.updateRot(rotation);
+				model = rotate(model, rotation, glm::vec3(0, 1, 0)); // Rotate
+			//	model = rotate(model, 0.20f, glm::vec3(0, 1, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 			{
 				// Set Model Rotation
-				model = rotate(model, -0.20f, glm::vec3(0, 1, 0)); // Rotate
+				float rotation(-.05);
+				m_player.updateRot(rotation);
+				model = rotate(model, rotation, glm::vec3(0,1 , 0)); // Rotate
+			//	model = rotate(model, -0.20f, glm::vec3(0, 1, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
 				// Set Model Rotation
-				model = rotate(model, -0.20f, glm::vec3(1, 0, 0)); // Rotate
+				float rotation(-.05);
+				m_player.updateRot(rotation);
+				model = rotate(model, rotation, glm::vec3(1, 0, 0)); // Rotate
+				//model = rotate(model, -0.20f, glm::vec3(1, 0, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			{
 				// Set Model Rotation
-				model = rotate(model, 0.20f, glm::vec3(1, 0, 0)); // Rotate
+				float rotation(.05);
+				m_player.updateRot(rotation);
+				model = rotate(model, rotation, glm::vec3(1, 0, 0)); // Rotate
 			//	model = translate(model,  glm::vec3(1, 0, 0)); // Rotate
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 			{
-				model = translate(model, glm::vec3(0, -0.05, 0)); // move
+				glm::vec3 vec(0, -0.05, 0);
+				m_player.updatePos(vec);
+				model = translate(model, vec); // move
 
 				//model = 
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 			{
-				model = translate(model, glm::vec3(0, 0.05, 0)); // move
+				glm::vec3 vec(0, 0.05, 0);
+				m_player.updatePos(vec);
+				model = translate(model, vec);   // move
 
 															   
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			{
-				model = translate(model, glm::vec3(0.05, 0, 0)); // move
+
+				glm::vec3 vec(0.05, 0, 0);
+				m_player.updatePos(vec);
+				model = translate(model, vec);  // move
 
 
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
-				model = translate(model, glm::vec3(-0.05, 0, 0)); // move
+				glm::vec3 vec(-0.05, 0, 0);
+				m_player.updatePos(vec);
+				model = translate(model, vec); // move
 
 
 			}
@@ -365,7 +389,7 @@ void Game::initialize()
 	projection = perspective(
 		45.0f,					// Field of View 45 degrees
 		4.0f / 3.0f,			// Aspect ratio
-		5.0f,					// Display Range Min : 0.1f unit
+		1.0f,					// Display Range Min : 0.1f unit
 		100.0f					// Display Range Max : 100.0f unit
 		);
 
@@ -412,12 +436,16 @@ void Game::update()
 #endif
 	
 	//	if(model == 200)
-	
+	model3 = translate(model3, vec3(0, 0, 0.001));
+	model4 = translate(model4, vec3(0, 0, 0.001));
+	model5 = translate(model5, vec3(0, 0, 0.001));
 	
 	//model3 = translate(model3, vec3(0.01f, 0, 0));
-	model3 = rotate(model3, 0.001f, vec3(1, 0, 0));
-	model4 = rotate(model4, 0.001f, vec3(5, 0, 0));
-	model5 = rotate(model5, 0.001f, vec3(10, 0, 0));
+	//model3 = rotate(model3, 0.001f, vec3(1, 0, 0));
+	//model4 = rotate(model4, 0.001f, vec3(5, 0, 0));
+	//model5 = rotate(model5, 0.001f, vec3(10, 0, 0));
+
+	
 }
 
 void Game::render()
