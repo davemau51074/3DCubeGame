@@ -40,7 +40,8 @@ int comp_count;		// Component of texture
 
 unsigned char* img_data;		// image data
 
-mat4 mvp, projection, view, model, model2, model3, model4, model5;			// Model View Projection
+mat4 mvp, projection, view; //model, model[1], model[2], model[3], model[4];			// Model View Projection
+mat4 model[5];
 
 Game::Game() : 
 	window(VideoMode(800, 600), 
@@ -70,7 +71,7 @@ void Game::run()
 
 	Event event;
 
-	while (isRunning){
+	while (window.isOpen()){
 
 #if (DEBUG >= 2)
 		DEBUG_MSG("Game running...");
@@ -88,8 +89,8 @@ void Game::run()
 				// Set Model Rotation
 				float rotation(.05);
 				m_player.updateRot(rotation);
-				model = rotate(model, rotation, glm::vec3(0, 1, 0)); // Rotate
-			//	model = rotate(model, 0.20f, glm::vec3(0, 1, 0)); // Rotate
+				model[0] = rotate(model[0], rotation, glm::vec3(0, 1, 0)); // Rotate
+			//	model[0] = rotate(model[0], 0.20f, glm::vec3(0, 1, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
@@ -97,8 +98,8 @@ void Game::run()
 				// Set Model Rotation
 				float rotation(-.05);
 				m_player.updateRot(rotation);
-				model = rotate(model, rotation, glm::vec3(0,1 , 0)); // Rotate
-			//	model = rotate(model, -0.20f, glm::vec3(0, 1, 0)); // Rotate
+				model[0] = rotate(model[0], rotation, glm::vec3(0,1 , 0)); // Rotate
+			//	model[0] = rotate(model[0], -0.20f, glm::vec3(0, 1, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -106,8 +107,8 @@ void Game::run()
 				// Set Model Rotation
 				float rotation(-.05);
 				m_player.updateRot(rotation);
-				model = rotate(model, rotation, glm::vec3(1, 0, 0)); // Rotate
-				//model = rotate(model, -0.20f, glm::vec3(1, 0, 0)); // Rotate
+				model[0] = rotate(model[0], rotation, glm::vec3(1, 0, 0)); // Rotate
+				//model[0] = rotate(model[0], -0.20f, glm::vec3(1, 0, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
@@ -115,14 +116,14 @@ void Game::run()
 				// Set Model Rotation
 				float rotation(.05);
 				m_player.updateRot(rotation);
-				model = rotate(model, rotation, glm::vec3(1, 0, 0)); // Rotate
-			//	model = translate(model,  glm::vec3(1, 0, 0)); // Rotate
+				model[0] = rotate(model[0], rotation, glm::vec3(1, 0, 0)); // Rotate
+			//	model[0] = translate(model[0],  glm::vec3(1, 0, 0)); // Rotate
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 			{
 				glm::vec3 vec(0, -0.05, 0);
 				m_player.updatePos(vec);
-				model = translate(model, vec); // move
+				model[0] = translate(model[0], vec); // move
 
 				//model = 
 			}
@@ -130,7 +131,7 @@ void Game::run()
 			{
 				glm::vec3 vec(0, 0.05, 0);
 				m_player.updatePos(vec);
-				model = translate(model, vec);   // move
+				model[0] = translate(model[0], vec);   // move
 
 															   
 			}
@@ -139,7 +140,7 @@ void Game::run()
 
 				glm::vec3 vec(0.05, 0, 0);
 				m_player.updatePos(vec);
-				model = translate(model, vec);  // move
+				model[0] = translate(model[0], vec);  // move
 
 
 			}
@@ -147,34 +148,48 @@ void Game::run()
 			{
 				glm::vec3 vec(-0.05, 0, 0);
 				m_player.updatePos(vec);
-				model = translate(model, vec); // move
+				model[0] = translate(model[0], vec); // move
 
 
 			}
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 			{
-				model = translate(model, glm::vec3(0, 0, 1)); // move
+				model[0] = translate(model[0], glm::vec3(0, 0, 1)); // move
 
 
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::U))
 			{
-				model = translate(model, glm::vec3(0, 0, -1)); // move
+				model[0] = translate(model[0], glm::vec3(0, 0, -1)); // move
 
 
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 			{
 				
-				move = true;
+				model[0][3].y += 0.200;
+
+				if (model[0][3].y >= 1)
+				{
+					model[0][3].y -= 0.700;
+
+					if (model[0][3].y == 1)
+					{
+						break;
+
+					}
+				}
 				/*velocity.y = impulse.y*pixelsTometres;
 			
-				model = translate(model, glm::vec3(0, 0.05, 0));
+				model[0] = translate(model[0], glm::vec3(0, 0.05, 0));
 			
-				model = translate(model, glm::vec3(0, -0.04, 0));*/
+				model[0] = translate(model[0], glm::vec3(0, -0.04, 0));*/
 			}
-
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				window.close();
+			}
 
 
 			if (move == false)
@@ -182,12 +197,12 @@ void Game::run()
 
 				velocity.y = 0;
 				position.y = 400;
-			//	model.setPosition(position);
+			//	model[0].setPosition(position);
 			}
 			else
 			{
 				position.y = 400;
-				//model.setPosition(position);
+				//model[0].setPosition(position);
 				float temp = (velocity.y / 2.0f);
 				velocity.y = -(velocity.y);
 				velocity.y += temp;
@@ -400,26 +415,17 @@ void Game::initialize()
 		vec3(0.0f, 1.0f, 0.0f)	// 0.0f, 1.0f, 0.0f Look Down and 0.0f, -1.0f, 0.0f Look Up
 		);
 
-	// Model matrix
-	model = mat4(
-		1.0f					// Identity Matrix
+	for (size_t i = 0; i < 5; i++)
+	{
+		model[i] = mat4(
+			1.0f
 		);
-	model2 = mat4(
-		1.0f
-		);
-	model3 = mat4(
-		1.0f
-	);
-	model4 = mat4(
-		1.0f
-	);
-	model5 = mat4(
-		1.0f
-	);
-	model2 = translate(model2, vec3(5, 0, 0));
-	model3 = translate(model3, vec3(-5, 0, 0));
-	model4 = translate(model3, vec3(5, 0, -5));
-	model5 = translate(model3, vec3(10, 0, -5));
+	}
+	
+	model[1] = translate(model[1], vec3(5, 0, 0));
+	model[2] = translate(model[2], vec3(-5, 0, 0));
+	model[3] = translate(model[2], vec3(-10, 0, -5));
+	model[4] = translate(model[2], vec3(10, 0, -5));
 	
 	
 	// Enable Depth Test
@@ -436,14 +442,50 @@ void Game::update()
 #endif
 	
 	//	if(model == 200)
-	model3 = translate(model3, vec3(0, 0, 0.001));
-	model4 = translate(model4, vec3(0, 0, 0.001));
-	model5 = translate(model5, vec3(0, 0, 0.001));
-	
-	//model3 = translate(model3, vec3(0.01f, 0, 0));
-	//model3 = rotate(model3, 0.001f, vec3(1, 0, 0));
-	//model4 = rotate(model4, 0.001f, vec3(5, 0, 0));
-	//model5 = rotate(model5, 0.001f, vec3(10, 0, 0));
+
+	for (size_t i = 1; i < 5; i++)
+	{
+		model[i] = translate(model[i], vec3(0, 0, 0.010 + (i/80.0)));
+	}
+	for (size_t i = 1; i < 5; i++)
+	{
+		if (model[i][3].z > 10)
+		{
+			model[i] = translate(model[i], vec3(0, 0, -100));
+			model[i] = translate(model[i], vec3(2, 0, 0));
+			
+			switch (i)
+			{
+			case 1:
+				if (model[i][3].x > 8)
+				{
+					model[i] = translate(model[i], vec3(-16, 0, 0));
+				}
+				break;
+			case 2:
+				if (model[i][3].x > 8)
+				{
+					model[i] = translate(model[i], vec3(-14, 0, 0));
+				}
+				break;
+			case 3:
+				if (model[i][3].x > 8)
+				{
+					model[i] = translate(model[i], vec3(-10, 0, 0));
+				}
+				break;
+			case 4:
+				if (model[i][3].x > 8)
+				{
+					model[i] = translate(model[i], vec3(-4, 0, 0));
+				}
+			}
+		}
+	}
+	//model[2] = translate(model[2], vec3(0.01f, 0, 0));
+	//model[2] = rotate(model[2], 0.001f, vec3(1, 0, 0));
+	//model[3] = rotate(model[3], 0.001f, vec3(5, 0, 0));
+	//model[4] = rotate(model[4], 0.001f, vec3(10, 0, 0));
 
 	
 }
@@ -459,38 +501,37 @@ void Game::render()
 	
 	//Use Progam on GPU
 	glUseProgram(progID);
-	
-	cubeRender(model2);
-	cubeRender(model3);
-	cubeRender(model4);
-	cubeRender(model5);
+	for (size_t i = 0; i < 5; i++)
+	{
+		cubeRender(model[i]);
+	}
 
-	mvp = projection * view * model;
-	//VBO Data....vertices, colors and UV's appended
-	glBufferSubData(GL_ARRAY_BUFFER, 0 * VERTICES * sizeof(GLfloat), 3 * VERTICES * sizeof(GLfloat), vertices);
-	glBufferSubData(GL_ARRAY_BUFFER, 3 * VERTICES * sizeof(GLfloat), 4 * COLORS * sizeof(GLfloat), colors);
-	glBufferSubData(GL_ARRAY_BUFFER, ((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat), 2 * UVS * sizeof(GLfloat), uvs);
+	//mvp = projection * view * model[0];
+	////VBO Data....vertices, colors and UV's appended
+	//glBufferSubData(GL_ARRAY_BUFFER, 0 * VERTICES * sizeof(GLfloat), 3 * VERTICES * sizeof(GLfloat), vertices);
+	//glBufferSubData(GL_ARRAY_BUFFER, 3 * VERTICES * sizeof(GLfloat), 4 * COLORS * sizeof(GLfloat), colors);
+	//glBufferSubData(GL_ARRAY_BUFFER, ((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat), 2 * UVS * sizeof(GLfloat), uvs);
 
-	// Send transformation to shader mvp uniform
-	glUniformMatrix4fv(mvpID, 1, GL_FALSE, &mvp[0][0]);
+	//// Send transformation to shader mvp uniform
+	//glUniformMatrix4fv(mvpID, 1, GL_FALSE, &mvp[0][0]);
 
-	//Set Active Texture .... 32
-	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(textureID, 0);
+	////Set Active Texture .... 32
+	//glActiveTexture(GL_TEXTURE0);
+	//glUniform1i(textureID, 0);
 
-	//Set pointers for each parameter (with appropriate starting positions)
-	//https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttribPointer.xml
-	glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glVertexAttribPointer(colorID, 4, GL_FLOAT, GL_FALSE, 0, (VOID*)(3 * VERTICES * sizeof(GLfloat)));
-	glVertexAttribPointer(uvID, 2, GL_FLOAT, GL_FALSE, 0, (VOID*)(((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat)));
-	
-	//Enable Arrays
-	glEnableVertexAttribArray(positionID);
-	glEnableVertexAttribArray(colorID);
-	glEnableVertexAttribArray(uvID);
+	////Set pointers for each parameter (with appropriate starting positions)
+	////https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttribPointer.xml
+	//glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	//glVertexAttribPointer(colorID, 4, GL_FLOAT, GL_FALSE, 0, (VOID*)(3 * VERTICES * sizeof(GLfloat)));
+	//glVertexAttribPointer(uvID, 2, GL_FLOAT, GL_FALSE, 0, (VOID*)(((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat)));
+	//
+	////Enable Arrays
+	//glEnableVertexAttribArray(positionID);
+	//glEnableVertexAttribArray(colorID);
+	//glEnableVertexAttribArray(uvID);
 
-	//Draw Element Arrays
-	glDrawElements(GL_TRIANGLES, 3 * INDICES, GL_UNSIGNED_INT, NULL);
+	////Draw Element Arrays
+	//glDrawElements(GL_TRIANGLES, 3 * INDICES, GL_UNSIGNED_INT, NULL);
 
 	/*-------------------------------------------------------------------------------------------------------------------*/
 
