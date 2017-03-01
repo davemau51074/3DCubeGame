@@ -208,13 +208,23 @@ void Game::run()
 				velocity.y += temp;
 
 			}
-
-
-
-
-
-
 		}
+
+
+		for (int i = 1; i < 5; i++)
+		{
+			distance = std::sqrt((model[0][3].x- model[i][3].x) * (model[0][3].x - model[i][3].x)) + ((model[0][3].z - model[i][3].z) * (model[0][3].z - model[i][3].z));
+			//	std::cout << "Distance " << distance << std::endl;
+			//model[0][3].z <= model[i][3].z
+			if (distance <= 2 )
+			{
+				//model[0][3].z = 10;
+				//lives -= 1;
+				std::cout << "Hit!!!!!" << std::endl;
+			}
+		}
+
+		//std::cout << "Lives: " << lives << std::endl;
 		update();
 		render();
 	}

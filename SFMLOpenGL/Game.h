@@ -41,6 +41,9 @@ private:
 	void cubeRender(mat4 &modelRef);
 	String readMethod();
 	String fragmentRead();
+	int lives = 5;
+	//std::vector2f 
+	double distance = 0;
 
 };
 
