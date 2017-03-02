@@ -40,7 +40,7 @@ int comp_count;		// Component of texture
 
 unsigned char* img_data;		// image data
 
-mat4 mvp, projection, view; //model, model[1], model[2], model[3], model[4];			// Model View Projection
+mat4 mvp, projection, view, modelWall1, modelWall2; //model, model[1], model[2], model[3], model[4];			// Model View Projection
 mat4 model[5];
 
 Game::Game() : 
@@ -135,23 +135,7 @@ void Game::run()
 
 															   
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			{
-
-				glm::vec3 vec(0.05, 0, 0);
-				m_player.updatePos(vec);
-				model[0] = translate(model[0], vec);  // move
-
-
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			{
-				glm::vec3 vec(-0.05, 0, 0);
-				m_player.updatePos(vec);
-				model[0] = translate(model[0], vec); // move
-
-
-			}
+		
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 			{
@@ -221,6 +205,7 @@ void Game::run()
 				//model[0][3].z = 10;
 				//lives -= 1;
 				std::cout << "Hit!!!!!" << std::endl;
+				window.close();
 			}
 		}
 
@@ -399,7 +384,7 @@ void Game::initialize()
 		0,					//Border
 		GL_RGBA,			//Bitmap
 		GL_UNSIGNED_BYTE,	//Specifies Data type of image data
-		img_data				//Image Data
+		img_data				//Image Dataa
 		);
 
 	// Find variables in the shader
@@ -437,7 +422,19 @@ void Game::initialize()
 	model[3] = translate(model[2], vec3(-10, 0, -5));
 	model[4] = translate(model[2], vec3(10, 0, -5));
 	
-	
+	modelWall1 = mat4(
+		1.0f
+	);
+
+	modelWall2 = mat4(
+		1.0f
+	);
+
+	modelWall1 = translate(modelWall1, vec3(16, 0, 0));
+	modelWall1 = scale(modelWall1, vec3(1, 2, 200));
+	modelWall2 = translate(modelWall2, vec3(-16, 0, 0));
+	modelWall2 = scale(modelWall2, vec3(1, 2, 200));
+
 	// Enable Depth Test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -455,7 +452,7 @@ void Game::update()
 
 	for (size_t i = 1; i < 5; i++)
 	{
-		model[i] = translate(model[i], vec3(0, 0, 0.010 + (i/80.0)));
+		model[i] = translate(model[i], vec3(0, 0, 0.010 + (i/40.0)));
 	}
 	for (size_t i = 1; i < 5; i++)
 	{
@@ -497,7 +494,28 @@ void Game::update()
 	//model[3] = rotate(model[3], 0.001f, vec3(5, 0, 0));
 	//model[4] = rotate(model[4], 0.001f, vec3(10, 0, 0));
 
-	
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+
+		glm::vec3 vec(0.010, 0, 0);
+		m_player.updatePos(vec);
+		model[0] = translate(model[0], vec);  // move
+		view = translate(view, glm::vec3(-0.010, 0, 0));
+
+
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	{
+		glm::vec3 vec(-0.010, 0, 0);
+		m_player.updatePos(vec);
+		model[0] = translate(model[0], vec); // move
+		view = translate(view, glm::vec3(0.010, 0, 0));
+
+	}
+
+
+
+
 }
 
 void Game::render()
@@ -511,6 +529,9 @@ void Game::render()
 	
 	//Use Progam on GPU
 	glUseProgram(progID);
+	cubeRender(modelWall1);
+	cubeRender(modelWall2);
+
 	for (size_t i = 0; i < 5; i++)
 	{
 		cubeRender(model[i]);
