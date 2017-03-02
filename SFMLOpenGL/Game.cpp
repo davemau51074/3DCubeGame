@@ -217,7 +217,8 @@ void Game::run()
 				//model[0][3].z = 10;
 				//lives -= 1;
 				std::cout << "Hit!!!!!" << std::endl;
-				window.close();
+				//window.close();
+				m_gameState = gameState::GameOver;
 			}
 		}
 
@@ -459,157 +460,189 @@ void Game::update()
 #if (DEBUG >= 2)
 	DEBUG_MSG("Updating...");
 #endif
-	
-	//	if(model == 200)
-
-	for (size_t i = 1; i < 5; i++)
+	switch (m_gameState)
 	{
-		model[i] = translate(model[i], vec3(0, 0, 0.010 + (i/40.0)));
-	}
-	for (size_t i = 1; i < 5; i++)
-	{
-		if (model[i][3].z > 10)
+		//	if(model == 200)
+	case gameState::Playing:
+		for (size_t i = 1; i < 5; i++)
 		{
-			model[i] = translate(model[i], vec3(0, 0, -100));
-			model[i] = translate(model[i], vec3(2, 0, 0));
-			
-			switch (i)
+			model[i] = translate(model[i], vec3(0, 0, 0.010 + (i / 40.0)));
+		}
+		for (size_t i = 1; i < 5; i++)
+		{
+			if (model[i][3].z > 10)
 			{
-			case 1:
-				if (model[i][3].x > 8)
+				model[i] = translate(model[i], vec3(0, 0, -100));
+				model[i] = translate(model[i], vec3(2, 0, 0));
+
+				switch (i)
 				{
-					model[i] = translate(model[i], vec3(-16, 0, 0));
-				}
-				break;
-			case 2:
-				if (model[i][3].x > 8)
-				{
-					model[i] = translate(model[i], vec3(-14, 0, 0));
-				}
-				break;
-			case 3:
-				if (model[i][3].x > 8)
-				{
-					model[i] = translate(model[i], vec3(-10, 0, 0));
-				}
-				break;
-			case 4:
-				if (model[i][3].x > 8)
-				{
-					model[i] = translate(model[i], vec3(-4, 0, 0));
+				case 1:
+					if (model[i][3].x > 8)
+					{
+						model[i] = translate(model[i], vec3(-16, 0, 0));
+					}
+					break;
+				case 2:
+					if (model[i][3].x > 8)
+					{
+						model[i] = translate(model[i], vec3(-14, 0, 0));
+					}
+					break;
+				case 3:
+					if (model[i][3].x > 8)
+					{
+						model[i] = translate(model[i], vec3(-10, 0, 0));
+					}
+					break;
+				case 4:
+					if (model[i][3].x > 8)
+					{
+						model[i] = translate(model[i], vec3(-4, 0, 0));
+					}
 				}
 			}
 		}
-	}
-	//model[2] = translate(model[2], vec3(0.01f, 0, 0));
-	//model[2] = rotate(model[2], 0.001f, vec3(1, 0, 0));
-	//model[3] = rotate(model[3], 0.001f, vec3(5, 0, 0));
-	//model[4] = rotate(model[4], 0.001f, vec3(10, 0, 0));
+		//model[2] = translate(model[2], vec3(0.01f, 0, 0));
+		//model[2] = rotate(model[2], 0.001f, vec3(1, 0, 0));
+		//model[3] = rotate(model[3], 0.001f, vec3(5, 0, 0));
+		//model[4] = rotate(model[4], 0.001f, vec3(10, 0, 0));
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	{
-		if (model[0][3].x < 10)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
-			glm::vec3 vec(0.010, 0, 0);
-			m_player.updatePos(vec);
-			model[0] = translate(model[0], vec);  // move
-			view = translate(view, glm::vec3(-0.010, 0, 0));
+			if (model[0][3].x < 10)
+			{
+				glm::vec3 vec(0.010, 0, 0);
+				m_player.updatePos(vec);
+				model[0] = translate(model[0], vec);  // move
+				view = translate(view, glm::vec3(-0.010, 0, 0));
+			}
+
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
+			if (model[0][3].x > -10)
+			{
+
+				glm::vec3 vec(-0.010, 0, 0);
+				m_player.updatePos(vec);
+				model[0] = translate(model[0], vec); // move
+				view = translate(view, glm::vec3(0.010, 0, 0));
+			}
 		}
 
+		modelWall1 = rotate(modelWall1, 0.001f, vec3(0, 1, 0));
+		modelWall2 = rotate(modelWall2, -0.001f, vec3(0, 1, 0));
+		break;
+
+	case gameState::GameOver:
+		break;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	{
-		if (model[0][3].x > -10)
-		{
-
-			glm::vec3 vec(-0.010, 0, 0);
-			m_player.updatePos(vec);
-			model[0] = translate(model[0], vec); // move
-			view = translate(view, glm::vec3(0.010, 0, 0));
-		}
-	}
-
-	modelWall1 = rotate(modelWall1, 0.001f, vec3(0, 1, 0));
-	modelWall2 = rotate(modelWall2, -0.001f, vec3(0, 1, 0));
-
-
 	//distance += 0.1 / 0.60;
 }
 
 void Game::render()
 {
-
 #if (DEBUG >= 2)
 	DEBUG_MSG("Render Loop...");
 #endif
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	window.pushGLStates();
-	string hud = "" + string("Distance: ") + tostring((int) timer.getElapsedTime().asSeconds() );
+	string hud = "" + string("Distance: ") + tostring((int)timer.getElapsedTime().asSeconds());
 	Text text(hud, font);
 
-	text.setColor(sf::Color(255, 255, 255, 170));
-	text.setPosition(50.f, 50.f);
-	window.draw(text);
-	
-	//SFML HERE
-	window.popGLStates();
-	//Use Progam on GPU
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vib);
-	glUseProgram(progID);
-	cubeRender(modelWall1);
-	cubeRender(modelWall2);
-
-	for (size_t i = 0; i < 5; i++)
+	switch (m_gameState)
 	{
-		cubeRender(model[i]);
+
+	
+
+	case gameState::Playing:
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		window.pushGLStates();
+	
+
+		text.setColor(sf::Color(255, 255, 255, 170));
+		text.setPosition(50.f, 50.f);
+		window.draw(text);
+
+		//SFML HERE
+		window.popGLStates();
+		//Use Progam on GPU
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vib);
+		glUseProgram(progID);
+		cubeRender(modelWall1);
+		cubeRender(modelWall2);
+
+		for (size_t i = 0; i < 5; i++)
+		{
+			cubeRender(model[i]);
+		}
+
+		//mvp = projection * view * model[0];
+		////VBO Data....vertices, colors and UV's appended
+		//glBufferSubData(GL_ARRAY_BUFFER, 0 * VERTICES * sizeof(GLfloat), 3 * VERTICES * sizeof(GLfloat), vertices);
+		//glBufferSubData(GL_ARRAY_BUFFER, 3 * VERTICES * sizeof(GLfloat), 4 * COLORS * sizeof(GLfloat), colors);
+		//glBufferSubData(GL_ARRAY_BUFFER, ((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat), 2 * UVS * sizeof(GLfloat), uvs);
+
+		//// Send transformation to shader mvp uniform
+		//glUniformMatrix4fv(mvpID, 1, GL_FALSE, &mvp[0][0]);
+
+		////Set Active Texture .... 32
+		//glActiveTexture(GL_TEXTURE0);
+		//glUniform1i(textureID, 0);
+
+		////Set pointers for each parameter (with appropriate starting positions)
+		////https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttribPointer.xml
+		//glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		//glVertexAttribPointer(colorID, 4, GL_FLOAT, GL_FALSE, 0, (VOID*)(3 * VERTICES * sizeof(GLfloat)));
+		//glVertexAttribPointer(uvID, 2, GL_FLOAT, GL_FALSE, 0, (VOID*)(((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat)));
+		//
+		////Enable Arrays
+		//glEnableVertexAttribArray(positionID);
+		//glEnableVertexAttribArray(colorID);
+		//glEnableVertexAttribArray(uvID);
+
+		////Draw Element Arrays
+		//glDrawElements(GL_TRIANGLES, 3 * INDICES, GL_UNSIGNED_INT, NULL);
+
+		/*-------------------------------------------------------------------------------------------------------------------*/
+
+		/*-------------------------------------------------------------------------------------------------------------------*/
+		window.display();
+
+		//Disable Arrays
+		glDisableVertexAttribArray(positionID);
+		glDisableVertexAttribArray(colorID);
+		glDisableVertexAttribArray(uvID);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+		//glUseProgram(0);
+	//	glTexEnvfv(0, 0, 0);
+		break;
+
+	case gameState::GameOver:
+
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		window.pushGLStates();
+		string hud = "Game Over";
+		Text text2(hud, font);
+		text2.setColor(sf::Color(255, 0, 0, 250));
+		text2.setPosition(250.f, 250.f);
+		window.draw(text2);
+
+		//SFML HERE
+		window.popGLStates();
+		window.display();
+		break;
+
 	}
 
-	//mvp = projection * view * model[0];
-	////VBO Data....vertices, colors and UV's appended
-	//glBufferSubData(GL_ARRAY_BUFFER, 0 * VERTICES * sizeof(GLfloat), 3 * VERTICES * sizeof(GLfloat), vertices);
-	//glBufferSubData(GL_ARRAY_BUFFER, 3 * VERTICES * sizeof(GLfloat), 4 * COLORS * sizeof(GLfloat), colors);
-	//glBufferSubData(GL_ARRAY_BUFFER, ((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat), 2 * UVS * sizeof(GLfloat), uvs);
-
-	//// Send transformation to shader mvp uniform
-	//glUniformMatrix4fv(mvpID, 1, GL_FALSE, &mvp[0][0]);
-
-	////Set Active Texture .... 32
-	//glActiveTexture(GL_TEXTURE0);
-	//glUniform1i(textureID, 0);
-
-	////Set pointers for each parameter (with appropriate starting positions)
-	////https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttribPointer.xml
-	//glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	//glVertexAttribPointer(colorID, 4, GL_FLOAT, GL_FALSE, 0, (VOID*)(3 * VERTICES * sizeof(GLfloat)));
-	//glVertexAttribPointer(uvID, 2, GL_FLOAT, GL_FALSE, 0, (VOID*)(((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat)));
-	//
-	////Enable Arrays
-	//glEnableVertexAttribArray(positionID);
-	//glEnableVertexAttribArray(colorID);
-	//glEnableVertexAttribArray(uvID);
-
-	////Draw Element Arrays
-	//glDrawElements(GL_TRIANGLES, 3 * INDICES, GL_UNSIGNED_INT, NULL);
-
-	/*-------------------------------------------------------------------------------------------------------------------*/
-
-	/*-------------------------------------------------------------------------------------------------------------------*/
-	window.display();
-
-	//Disable Arrays
-	glDisableVertexAttribArray(positionID);
-	glDisableVertexAttribArray(colorID);
-	glDisableVertexAttribArray(uvID);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	//glUseProgram(0);
-//	glTexEnvfv(0, 0, 0);
 }
 
 void Game::cubeRender(mat4 &modelRef)

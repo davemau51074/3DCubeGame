@@ -45,7 +45,13 @@ private:
 	String fragmentRead();
 	int lives = 5;
 	sf::Clock timer;
+	enum gameState {
+		Playing,
+		GameOver
+
+	};
 	
+	gameState m_gameState = gameState::Playing;
 	//std::vector2f 
 	float distance = 0;
 
