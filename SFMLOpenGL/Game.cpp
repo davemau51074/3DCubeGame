@@ -1,6 +1,14 @@
 #include <Game.h>
 #include <Cube.h>
 
+
+template  <typename T>
+string  tostring(T number)
+{
+	ostringstream oss;
+	oss << number;
+	return oss.str();
+}
 GLuint	vsid,		// Vertex Shader ID
 		fsid,		// Fragment Shader ID
 		progID,		// Program ID
@@ -43,6 +51,8 @@ unsigned char* img_data;		// image data
 mat4 mvp, projection, view, modelWall1, modelWall2; //model, model[1], model[2], model[3], model[4];			// Model View Projection
 mat4 model[5];
 
+Font font;
+
 Game::Game() : 
 	window(VideoMode(800, 600), 
 	"Introduction to OpenGL Texturing"),
@@ -68,6 +78,7 @@ void Game::run()
 {
 
 	initialize();
+	font.loadFromFile("./Assets/Fonts/BAUHS93.TTF");
 
 	Event event;
 
@@ -119,26 +130,27 @@ void Game::run()
 				model[0] = rotate(model[0], rotation, glm::vec3(1, 0, 0)); // Rotate
 			//	model[0] = translate(model[0],  glm::vec3(1, 0, 0)); // Rotate
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			{
-				glm::vec3 vec(0, -0.05, 0);
-				m_player.updatePos(vec);
-				model[0] = translate(model[0], vec); // move
+			//if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+			//{
+			//	glm::vec3 vec(0, -0.05, 0);
+			//	m_player.updatePos(vec);
+			//	model[0] = translate(model[0], vec); // move
 
-				//model = 
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			{
-				glm::vec3 vec(0, 0.05, 0);
-				m_player.updatePos(vec);
-				model[0] = translate(model[0], vec);   // move
+			//	//model = 
+			//}
+			//if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+			//{
+			//	glm::vec3 vec(0, 0.05, 0);
+			//	m_player.updatePos(vec);
+			//	model[0] = translate(model[0], vec);   // move
 
-															   
-			}
+			//												   
+			//}
 		
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 			{
+
 				model[0] = translate(model[0], glm::vec3(0, 0, 1)); // move
 
 
@@ -430,9 +442,9 @@ void Game::initialize()
 		1.0f
 	);
 
-	modelWall1 = translate(modelWall1, vec3(16, 0, 0));
+	modelWall1 = translate(modelWall1, vec3(12, 0, 0));
 	modelWall1 = scale(modelWall1, vec3(1, 2, 200));
-	modelWall2 = translate(modelWall2, vec3(-16, 0, 0));
+	modelWall2 = translate(modelWall2, vec3(-12, 0, 0));
 	modelWall2 = scale(modelWall2, vec3(1, 2, 200));
 
 	// Enable Depth Test
@@ -496,26 +508,32 @@ void Game::update()
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-
-		glm::vec3 vec(0.010, 0, 0);
-		m_player.updatePos(vec);
-		model[0] = translate(model[0], vec);  // move
-		view = translate(view, glm::vec3(-0.010, 0, 0));
-
+		if (model[0][3].x < 10)
+		{
+			glm::vec3 vec(0.010, 0, 0);
+			m_player.updatePos(vec);
+			model[0] = translate(model[0], vec);  // move
+			view = translate(view, glm::vec3(-0.010, 0, 0));
+		}
 
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		glm::vec3 vec(-0.010, 0, 0);
-		m_player.updatePos(vec);
-		model[0] = translate(model[0], vec); // move
-		view = translate(view, glm::vec3(0.010, 0, 0));
+		if (model[0][3].x > -10)
+		{
 
+			glm::vec3 vec(-0.010, 0, 0);
+			m_player.updatePos(vec);
+			model[0] = translate(model[0], vec); // move
+			view = translate(view, glm::vec3(0.010, 0, 0));
+		}
 	}
 
+	modelWall1 = rotate(modelWall1, 0.001f, vec3(0, 1, 0));
+	modelWall2 = rotate(modelWall2, -0.001f, vec3(0, 1, 0));
 
 
-
+	//distance += 0.1 / 0.60;
 }
 
 void Game::render()
@@ -527,7 +545,20 @@ void Game::render()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	window.pushGLStates();
+	string hud = "" + string("Distance: ") + tostring((int) timer.getElapsedTime().asSeconds() );
+	Text text(hud, font);
+
+	text.setColor(sf::Color(255, 255, 255, 170));
+	text.setPosition(50.f, 50.f);
+	window.draw(text);
+	
+	//SFML HERE
+	window.popGLStates();
 	//Use Progam on GPU
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vib);
 	glUseProgram(progID);
 	cubeRender(modelWall1);
 	cubeRender(modelWall2);
@@ -573,7 +604,12 @@ void Game::render()
 	glDisableVertexAttribArray(positionID);
 	glDisableVertexAttribArray(colorID);
 	glDisableVertexAttribArray(uvID);
-	
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	//glUseProgram(0);
+//	glTexEnvfv(0, 0, 0);
 }
 
 void Game::cubeRender(mat4 &modelRef)

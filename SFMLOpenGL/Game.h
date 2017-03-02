@@ -6,13 +6,15 @@
 #include <GL/glew.h>
 #include <GL/wglew.h>
 #include "Player.h"
+#include <string>
+#include <sstream>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
-
+#include <SFML\Graphics.hpp>
 #include <Debug.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -31,7 +33,7 @@ public:
 	~Game();
 	void run();
 private:
-	Window window;
+	RenderWindow window;
 	bool isRunning = false;
 	void initialize();
 	void update();
@@ -42,8 +44,10 @@ private:
 	String readMethod();
 	String fragmentRead();
 	int lives = 5;
+	sf::Clock timer;
+	
 	//std::vector2f 
-	double distance = 0;
+	float distance = 0;
 
 };
 
