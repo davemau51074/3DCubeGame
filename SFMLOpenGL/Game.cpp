@@ -531,8 +531,7 @@ void Game::update()
 			}
 		}
 
-		modelWall1 = rotate(modelWall1, 0.001f, vec3(0, 1, 0));
-		modelWall2 = rotate(modelWall2, -0.001f, vec3(0, 1, 0));
+		
 		break;
 
 	case gameState::GameOver:
@@ -550,6 +549,9 @@ void Game::render()
 	string hud = "" + string("Distance: ") + tostring((int)timer.getElapsedTime().asSeconds());
 	Text text(hud, font);
 
+
+	
+	
 	switch (m_gameState)
 	{
 
@@ -579,6 +581,48 @@ void Game::render()
 		{
 			cubeRender(model[i]);
 		}
+
+		// right bottom
+		glViewport(window.getSize().x / 2, window.getSize().y / 4, window.getSize().x/2, window.getSize().y/2);
+		glLoadIdentity();
+		gluLookAt(5.0f, 5.0f, 5.0f,
+			0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f);
+		for (size_t i = 0; i < 5; i++)
+		{
+			cubeRender(model[i]);
+		}
+		cubeRender(modelWall1);
+		cubeRender(modelWall2);
+		// left bottom
+		glViewport(0, window.getSize().y / 4, window.getSize().x / 2, window.getSize().y/2);
+		glLoadIdentity();
+		gluLookAt(5.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f);
+		for (size_t i = 0; i < 5; i++)
+		{
+			cubeRender(model[i]);
+		}
+		cubeRender(modelWall1);
+		cubeRender(modelWall2);
+
+	
+		window.display();
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		if (window.getSize().x <= window.getSize().y)
+			glOrtho(-2.0, 2.0,
+				-2.0 * (GLfloat)window.getSize().y / (GLfloat)window.getSize().x, 2.0 * (GLfloat)window.getSize().y / (GLfloat)window.getSize().x,
+				-10.0, 100.0);
+		else
+			glOrtho(-2.0 * (GLfloat)window.getSize().x / (GLfloat)window.getSize().y, 2.0 * (GLfloat)window.getSize().x / (GLfloat)window.getSize().y,
+				-2.0, 2.0,
+				-10.0, 100.0);
+
+		glMatrixMode(GL_MODELVIEW);
 
 		//mvp = projection * view * model[0];
 		////VBO Data....vertices, colors and UV's appended
